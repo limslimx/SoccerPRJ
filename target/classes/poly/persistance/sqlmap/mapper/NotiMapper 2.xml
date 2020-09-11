@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- JAVA와 연결할 Mapper 파일 설정 -->
+<mapper namespace="poly.persistance.mapper.NotiMapper">
+
+	<insert id="insertNotiInfo" parameterType="NotiDTO">
+		INSERT INTO noti(
+		notiNo, title, content, regNo
+		)VALUES(
+		(SELECT NVL(MAX(notiNo),0)+1 FROM noti),
+		#{title},
+		#{content},
+		#{regNo})
+	</insert>
+
+	<select id="getNotiList" parameterType="pagingDTO"
+		resultType="NotiDTO">
+<![CDATA[
+SELECT
+	title AS title,
+	content AS content,
+	regNo AS regNo,
+	regDate AS regDate,
+	notiNo AS notiNo,
+	viewcount AS viewcount
+FROM
+(
+	SELECT
+		A.*,ROWNUM as RNUM
+	FROM
+		(
+		SELECT
+			*
+		FROM
+			noti
+		ORDER BY regDate DESC	
+		)A
+	WHERE
+		ROWNUM <= #{endNum} 
+)
+WHERE
+	RNUM >=#{startNum}
+]]>
+	</select>
+
+	<select id="getNotiDetail" parameterType="String"
+		resultType="NotiDTO">
+		SELECT
+		title AS title,
+		content AS content,
+		regDate AS regDate,
+		notiNo AS notiNo
+		FROM
+		noti
+		WHERE
+		notiNo = #{notiNo}
+	</select>
+
+	<update id="updateNoti" parameterType="NotiDTO">
+		UPDATE
+		noti
+		SET
+		title = #{title},
+		content = #{content}
+		WHERE
+		notiNo = #{notiNo}
+	</update>
+
+	<delete id="deleteNoti" parameterType="String">
+		DELETE
+		FROM noti
+		WHERE
+		notiNo = #{notiNo}
+	</delete>
+
+	<update id="viewcount" parameterType="String">
+		UPDATE
+		noti
+		SET
+		viewcount = viewcount + 1
+		WHERE
+		notiNo = #{notiNo}
+	</update>
+	<select id="getNotiTotal" resultType="int">
+		SELECT
+		COUNT(*)
+		FROM
+		noti
+	</select>
+</mapper>

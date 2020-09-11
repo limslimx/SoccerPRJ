@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- JAVA와 연결할 Mapper 파일 설정 -->
+<mapper namespace="poly.persistance.mapper.IMyInfoMapper">
+<update id="updateTeamNews" parameterType="TeamNewsDTO">
+	<!-- UPDATE teamnews
+		SET collectTime=#{collectTime}, `team`=#{team}, `title`=#{title}, `content`=#{content}, `image`=#{image}, `date`=#{date}, `link`=#{link}
+	WHERE `team`=#{team} -->
+	INSERT INTO TEAM_SOCCERNEWS(
+		NEWS_COLLECTTIME,
+		NEWS2_NO,
+		NEWS_TEAM,
+		NEWS_TITLE,
+		NEWS_CONTENT,
+		NEWS_LINK
+		) VALUES( 
+			#{collectTime},
+			 NEWS2_NO.NEXTVAL,
+			  #{team},
+			   #{title},
+			    #{content},
+			     #{link}
+		)
+</update>
+<select id="selectTeamNews" parameterType="TeamNewsDTO" resultType="TeamNewsDTO">
+	SELECT
+		NEWS2_NO AS newsNo, NEWS_TEAM AS team, NEWS_TITLE AS title, NEWS_LINK AS link
+	FROM
+		TEAM_SOCCERNEWS
+	WHERE
+		NEWS_TEAM=#{team}
+	ORDER BY
+		NEWS2_NO ASC
+</select>
+<select id="selectTeamNewsDetail" parameterType="TeamNewsDTO" resultType="TeamNewsDTO">
+	SELECT
+		NEWS2_NO AS newsNo, NEWS_TITLE AS title, NEWS_CONTENT AS content
+	FROM
+		TEAM_SOCCERNEWS
+	WHERE
+		NEWS2_NO=#{newsNo}
+</select>
+<update id="updatePlayer" parameterType="PlayerDTO"><!-- 
+	INSERT INTO TEAM_SOCCERPLAYER(
+		T.COLLECTTIME, U.TEAM, T.PLAYER_NAME, T.PLAYER_POSITION, T.PLAYER_IMAGE
+		) SELECT #{collectTime}, #{team}, #{name}, #{position}, #{image} from dual
+		WHERE NOT EXISTS (SELECT * FROM TEAM_SOCCERPLAYER T, USER_INFO U WHERE U.TEAM=#{team} AND T.PLAYER_NAME=#{name}) -->
+	INSERT INTO TEAM_SOCCERPLAYER(
+		PLAYER_NO, COLLECTTIME, PLAYER_TEAM, PLAYER_NAME, PLAYER_POSITION, PLAYER_IMAGE, PLAYER_AGE
+		) VALUES(
+		PLAYER_NO.NEXTVAL, #{collectTime}, #{team}, #{name}, #{position}, #{image}, #{age}
+		)
+</update>
+
+<select id="selectPlayer" parameterType="PlayerDTO" resultType="PlayerDTO">
+	SELECT
+		PLAYER_TEAM AS team, PLAYER_POSITION AS position, PLAYER_IMAGE AS image, PLAYER_NAME AS name, PLAYER_AGE AS age
+	FROM
+		TEAM_SOCCERPLAYER
+	WHERE
+		PLAYER_TEAM=#{team}
+	ORDER BY
+		PLAYER_POSITION DESC
+</select>
+
+<!-- myTeam이 사용자가 선택한 팀명이고 teamName은 update시 구분하기 위해 사용함 team은 순위 크롤링한 여러 팀들을 의미함 -->
+<update id="updateTeamRank" parameterType="TeamRankDTO">
+UPDATE TEAM_SOCCERRANK
+		SET RANK=#{rank}, RANK_TEAMIMAGE=#{image}, RANK_TEAMNAME=#{team}, RANK_TOTALGAME=#{totalMatch}, RANK_WONGAME=#{wonMatch}, RANK_DRAWGAME=#{drawMatch}, RANK_LOSTGAME=#{lostMatch}, RANK_DIFF=#{diff}, RANK_POINTS=#{points}
+WHERE MYTEAM=#{teamName}
+<!-- INSERT INTO TEAM_SOCCERRANK(
+		RANK_NO,
+		RANK_LEAGUE,
+		MYTEAM,
+		RANK_TEAMNAME,
+		RANK,
+		RANK_TEAMIMAGE,
+		RANK_TOTALGAME,
+		RANK_WONGAME,
+		RANK_DRAWGAME,
+		RANK_LOSTGAME,
+		RANK_DIFF,
+		RANK_POINTS
+		) VALUES( RANK_NO.NEXTVAL, #{league}, #{myTeam}, #{team}, #{rank}, #{image}, #{totalMatch}, #{wonMatch}, #{drawMatch}, #{lostMatch}, #{diff}, #{points}) -->
+</update>
+
+<select id="selectTeamRank" parameterType="TeamRankDTO" resultType="TeamRankDTO">
+	SELECT
+		RANK_LEAGUE AS league, RANK AS rank, RANK_TEAMIMAGE AS image, RANK_TEAMNAME AS team, RANK_TOTALGAME AS totalMatch, RANK_WONGAME AS wonMatch, RANK_DRAWGAME AS drawMatch, RANK_LOSTGAME AS lostMatch, RANK_DIFF AS diff, RANK_POINTS AS points
+	FROM
+		TEAM_SOCCERRANK
+	WHERE
+		MYTEAM=#{team}
+	ORDER BY
+		LENGTH(RANK) ASC, RANK ASC
+	
+</select>
+<update id="updateTeamSchedule" parameterType="TeamScheduleDTO">
+UPDATE teamschedule
+		SET day=#{day}, teamHome=#{teamHome}, teamAway=#{teamAway}, scoreHome=#{scoreHome}, scoreAway=#{scoreAway}, imageHome=#{imageHome}, imageAway=#{imageAway}, league=#{league}
+WHERE teamName=#{teamName}
+</update>
+</mapper>

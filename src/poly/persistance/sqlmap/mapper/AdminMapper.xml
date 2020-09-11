@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="poly.persistance.mapper.AdminMapper">
+<select id="getUserList" resultType="UserDTO">
+	SELECT ID AS id FROM USER_INFO
+</select>
+
+<select id="getUserDetail" parameterType="UserDTO" resultType="UserDTO">
+	SELECT ID AS id, EMAIL AS email FROM USER_INFO WHERE ID=#{id}
+</select>
+
+<delete id="userInfoDelete" parameterType="UserDTO">
+	DELETE FROM USER_INFO WHERE ID = #{id}	
+</delete>
+
+<select id="getNotiList" resultType="NotiDTO">
+	SELECT TITLE AS title, CONTENT AS content, REG_DT AS reg_dt, REG_ID AS reg_id, NOTI_SEQ AS seq FROM NOTI
+</select>
+
+<insert id="insertNotiInfo" parameterType="NotiDTO">
+	INSERT INTO NOTI(
+		TITLE, CONTENT, REG_DT, REG_ID, NOTI_SEQ
+	) VALUES (
+		#{title}, #{content}, SYSDATE, #{reg_id}, NOTI_SEQ.NEXTVAL
+	)
+</insert>
+
+<select id="getNotiDetail" parameterType="NotiDTO" resultType="NotiDTO">
+	SELECT
+		TITLE AS title,
+		CONTENT AS content,
+		REG_DT AS reg_dt,
+		REG_ID AS reg_id,
+		NOTI_SEQ AS seq
+	FROM
+		NOTI
+	WHERE
+		NOTI_SEQ=#{seq}
+</select>
+
+<update id="updateNotiInfo" parameterType="NotiDTO">
+	UPDATE NOTI
+		SET TITLE=#{title}, CONTENT=#{content}
+		WHERE NOTI_SEQ=#{seq}
+</update>
+
+<delete id="deleteNotiInfo" parameterType="NotiDTO">
+	DELETE FROM NOTI
+	WHERE NOTI_SEQ = #{seq}
+</delete>
+</mapper>

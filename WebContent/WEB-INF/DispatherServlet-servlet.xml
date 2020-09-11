@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:task="http://www.springframework.org/schema/task" 
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+    http://www.springframework.org/schema/beans/spring-beans.xsd
+    http://www.springframework.org/schema/aop
+    http://www.springframework.org/schema/aop/spring-aop.xsd
+    http://www.springframework.org/schema/mvc
+    http://www.springframework.org/schema/mvc/spring-mvc.xsd
+    http://www.springframework.org/schema/context
+    http://www.springframework.org/schema/context/spring-context.xsd
+    http://www.springframework.org/schema/task 
+    http://www.springframework.org/schema/task/spring-task-4.0.xsd">
+	<!-- 어노테이션 사용하기 -->
+	<mvc:annotation-driven />
+	<bean class="org.springframework.web.servlet.mvc.support.ControllerClassNameHandlerMapping" />
+	<context:component-scan base-package="poly.controller" use-default-filters="false">
+		<context:include-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+	</context:component-scan>
+
+	<context:component-scan base-package="poly.service" />
+	<context:component-scan base-package="poly.persistance.mapper" />
+
+ 	
+	<!-- ViewResolver : 뷰 선택자 -->
+	<bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="order" value="1"/>
+		<property name="viewClass">
+			<value>org.springframework.web.servlet.view.JstlView</value>
+		</property>
+		
+		<!-- 스프링에서 JSP 결과값을 전달할 때 기본이 되는 루트 위치 -->
+		<property name="prefix">
+			<value>/WEB-INF/view/</value>
+		</property>
+		
+		<property name="suffix">
+			<value>.jsp</value>
+		</property>
+		
+		<property name="contentType">
+			<value>text/html; charset=UTF-8</value>
+		</property>
+	</bean>
+		
+	<!-- 파일업로드 기능 -->		
+	<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver" 
+		p:maxUploadSize="104857600" p:maxInMemorySize="104857600" />
+	<!-- 빈 자동 등록 -->
+    <context:component-scan base-package="poly.controller"/>
+    <!-- <bean class="com.spring.exam.LogProcessor" /> -->
+    
+    <!-- 작업을 실행할 TaskExecutor와 Task Scheduler를 지정 -->
+    <task:annotation-driven executor="executor" scheduler="scheduler" />
+        
+    <!-- 스케줄러 생성 -->
+     <!-- pool-size 지정하지 않을 경우 쓰레드 풀의 기본값은 1 -->     
+    <task:scheduler id="scheduler" pool-size="5" />
+    
+    <!-- TaskExecutor 생성 - 작업실행 설정 -->
+    <!-- 
+        <task:executor>태그의 주요 속성
+        1. id : 생성할 빈의 식별값
+        2. pool-size :  쓰레드 풀의 개수 지정
+        3. queue-capacity : 작업이 저장되는 큐의 최대 크기 , 
+                            풀의 쓰레드가 모두 작업을 실행중인 경우 큐에서 대기, 기본값은 Integer.MAX_VALUE
+        4. keep-alive : 풀에 있는 쓰레드의 최대 유휴시간. 이 시간 동안 새로운 작업을 실행하지 않으면 풀에서 제거. 
+                        단위는 초
+        5. rejection-policy : 큐가 다 차서 더이상 작업을 받을 수 없을때 작업을 어떻게 처리할지를 결정
+                              ABORT - 작업을 거부하고 예외를 발생
+                              CALLER_RUNS - 호출한 쓰레드를 이용해서 실행
+                              DISCARD - 작업을 실행하지 않고 무시
+                              DISCARD_OLDEST - 큐의 헤드에서 하나를 제거하고 작업을 추가
+                              기본값은 ABORT.
+     -->
+    <task:executor id="executor" keep-alive="5" pool-size="1-2" queue-capacity="1" rejection-policy="ABORT" />
+ 
+</beans>

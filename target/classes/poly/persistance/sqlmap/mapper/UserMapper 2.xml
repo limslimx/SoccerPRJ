@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="poly.persistance.mapper.UserMapper">
+
+	<select id="idCheck" resultType="UserDTO">
+	SELECT DISTINCT(id) FROM USER_INFO WHERE id = #{id}
+	</select>
+	
+	<select id="emailCheck" resultType="UserDTO">
+	SELECT DISTINCT(email) FROM USER_INFO WHERE email = #{email}
+	</select>
+	
+	<select id="getLogin" resultType="UserDTO">
+	SELECT AUTHORITY, ID, team FROM USER_INFO WHERE ID = #{id} AND PASSWD = #{passwd}
+	</select>
+	
+	<select id="findID" parameterType="UserDTO" resultType="UserDTO">
+	SELECT email, id FROM USER_INFO WHERE email = #{email}
+	</select>
+	
+	<insert id="userRegProc" parameterType="UserDTO">
+	INSERT INTO
+	USER_INFO
+	(
+		id,
+		email,
+		passwd,
+		team,
+		regNo,
+		updNo
+	)
+	VALUES
+	(
+		#{id},
+		#{email},
+		#{passwd},
+		#{team},
+		1000,
+		1000
+	)
+	</insert>
+	
+	<select id="getUserInfo" parameterType="UserDTO" resultType="UserDTO">
+		SELECT email, passwd FROM USER_INFO WHERE id=#{id}
+	</select>
+	
+	<update id="changePw" parameterType="UserDTO">
+		UPDATE USER_INFO SET passwd=#{passwd2} where id=#{id}
+	</update>
+	
+	<select id="pwCheck" parameterType="UserDTO" resultType="UserDTO">
+		SELECT passwd FROM USER_INFO WHERE id=#{id}
+	</select>
+	
+	<update id="updateEmail" parameterType="UserDTO">
+		UPDATE USER_INFO SET email=#{email}, team=#{team} WHERE id=#{id}
+	</update>
+	
+	<update id="updatePw" parameterType="UserDTO">
+		UPDATE USER_INFO SET passwd=#{passwd} WHERE id=#{id}
+	</update>
+</mapper>

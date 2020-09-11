@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- JAVA와 연결할 Mapper 파일 설정 -->
+<mapper namespace="poly.persistance.mapper.ISoccerMapper">
+<update id="updateRank" parameterType="RankDTO">
+	<!-- INSERT INTO SOCCERRANK(
+		RANK, IMAGE, TEAM, TOTALMATCH, WONMATCH, DRAWMATCH, LOSTMATCH, GOAL, LOST, DIFF, POINTS, GAME
+		) VALUES(
+			#{rank}, #{image}, #{team}, #{totalMatch}, #{wonMatch}, #{drawMatch}, #{lostMatch}, #{goal}, #{lost}, #{diff}, #{points}, #{game}
+			) -->
+	UPDATE TOTAL_SOCCERRANK
+		SET RANK=#{rank}, IMAGE=#{image}, TEAM=#{team}, TOTALMATCH=#{totalMatch}, WONMATCH=#{wonMatch}, DRAWMATCH=#{drawMatch}, LOSTMATCH=#{lostMatch}, GOAL=#{goal}, LOST=#{lost}, DIFF=#{diff}, POINTS=#{points}, GAME=#{game}
+	WHERE RANK=#{rank}
+</update>
+
+<select id="selectRank" resultType="RankDTO">
+	SELECT
+		RANK AS rank, IMAGE AS image, TEAM AS team, TOTALMATCH AS totalMatch, WONMATCH AS wonMatch, DRAWMATCH AS drawMatch, LOSTMATCH AS lostMatch, GOAL AS goal, LOST AS lost, DIFF AS diff, POINTS AS points, GAME AS game
+	FROM
+		TOTAL_SOCCERRANK
+	ORDER BY
+		LENGTH(RANK) ASC, RANK ASC
+</select>
+
+<!-- <update id="updateSchedule" parameterType="ScheduleDTO">
+	UPDATE TOTAL_SOCCERSCHEDULE
+		SET SCHEDULE_DAY=#{day}, SCHEDULE_TIME=#{time}, SCHEDULE_HOMETEAM=#{teamHome}, SCHEDULE_AWAYTEAM=#{teamAway}, SCHEDULE_HOMESCORE=#{scoreHome}, SCHEDULE_AWAYSCORE=#{scoreAway}
+	WHERE SCHEDULE_HOMETEAM=#{teamHome}
+	INSERT INTO TOTAL_SOCCERSCHEDULE(
+		COLLECTTIME, SCHEDULE_DAY, SCHEDULE_TIME, SCHEDULE_HOMETEAM, SCHEDULE_AWAYTEAM, SCHEDULE_HOMESCORE, SCHEDULE_AWAYSCORE
+		) VALUES(
+			#{collectTime}, #{day}, #{time}, #{teamHome}, #{teamAway}, #{scoreHome}, #{scoreAway})
+</update> -->
+
+<select id="selectSchedule" resultType="ScheduleDTO">
+	SELECT
+		SCHEDULE_DAY AS day, SCHEDULE_TIME AS time, SCHEDULE_HOMETEAM AS teamHome, SCHEDULE_AWAYTEAM AS teamAway, SCHEDULE_HOMESCORE AS scoreHome, SCHEDULE_AWAYSCORE AS scoreAway
+	FROM
+		TOTAL_SOCCERSCHEDULE
+	ORDER BY
+		SCHEDULE_TIME ASC
+</select>
+
+<update id="updateNews" parameterType="NewsDTO">
+<!-- 	UPDATE soccernews
+		SET `title`=#{title}, `content`=#{content}, `link`=#{link}, titleDetail=#{titleDetail}, contentDetail=#{contentDetail}, translatedTitle={#translatedTitle}, translatedContent=#{translatedTitle}, translatedTitleDetail=#{translatedTitleDetail}, translatedContentDetail=#{translatedContentDetail}
+	WHERE `title`=#{title} -->
+	INSERT INTO TOTAL_SOCCERNEWS(
+		NEWS_COLLECTTIME,
+		NEWS_NO,
+		NEWS_TITLE,
+		NEWS_CONTENT,
+		NEWS_LINK,
+		NEWS_TITLE_DETAIL,
+		NEWS_CONTENT_DETAIL
+	) VALUES(
+		#{collectTime}, NEWS_NO.NEXTVAL, #{title}, #{content}, #{link}, #{titleDetail}, #{contentDetail}
+		)
+</update>
+
+<select id="selectNews" resultType="NewsDTO">
+	SELECT
+		NEWS_NO AS newsNo, NEWS_TITLE AS title, NEWS_CONTENT AS content, NEWS_LINK AS link
+	FROM
+		TOTAL_SOCCERNEWS
+	ORDER BY
+		NEWS_NO DESC
+</select>
+
+<select id="selectNewsDetail" parameterType="NewsDTO" resultType="NewsDTO">
+SELECT
+	NEWS_NO AS newsNo,
+	NEWS_TITLE_DETAIL AS titleDetail,
+	NEWS_CONTENT_DETAIL AS contentDetail
+FROM
+	TOTAL_SOCCERNEWS
+WHERE
+	NEWS_NO = #{newsNo}
+</select>
+</mapper>
